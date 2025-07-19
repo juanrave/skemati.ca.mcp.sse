@@ -1,5 +1,5 @@
 def main():
-    print("Hello from skemati-ca-mcp-sse!")
+    print("Hello from base!")
 
 
 if __name__ == "__main__":
