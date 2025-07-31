@@ -26,6 +26,6 @@ python3 -m pip install fastapi uvicorn
 
 uv add fastapi uvicorn 
 
-uv run base.py 
+uv run server.py 
 
 tail -n 20 -f ~/Library/Logs/Claude/mcp*.log   

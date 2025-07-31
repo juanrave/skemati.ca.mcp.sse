@@ -7,7 +7,8 @@ from fastapi.responses import StreamingResponse
 import asyncio
 
 # Initialize FastMCP server
-mcp = FastMCP("skemati.ca")
+mcp = FastMCP("skemati.ca", 
+    json_response=True)
 
 # Constants
 API_BASE = "https://consultaprocesos.ramajudicial.gov.co:448/api/v2/Procesos/Consulta/NumeroRadicacion"
