@@ -23,10 +23,10 @@ API_NOMBRE_RAZON_SOCIAL = "Procesos/Consulta/NombreRazonSocial"
 
 USER_AGENT = "skemati.ca.sse-app/1.0"
 
-def ejecutar_comando_para_llm(comando, timeout=25):
+def execute_cli_judicial(cmd, timeout=25):
     try:
         resultado = subprocess.run(
-            comando,
+            cmd,
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -87,28 +87,34 @@ async def get_radicacion_por_numero(numero: str) -> str:
 
     return json.dumps(data)
     """
-    data = ejecutar_comando_para_llm(["judicial", "consulta", "radicado", numero])
+    data = execute_cli_judicial(["judicial", "consulta", "radicado", numero])
     return json.dumps(data)
 
 @mcp.tool()
-async def get_radicacion_por_nombre(nombre: str) -> str:
+async def get_radicacion_por_nombre_persona_natural(nombre: str) -> str:
+    """Get 
+    Args:
+        nombre: corresponde al nombre de la persona natural.
+    Returns:
+        Los resultados de la consulta de la radicacion por nombre de la persona natural.
+    """
+    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "nat"]
+    print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
+
+    return json.dumps(data)
+
+@mcp.tool()
+async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
     """Get 
     Args:
         nombre: corresponde al nombre de la razon social.
     Returns:
         Los resultados de la consulta de la radicacion por nombre de la razon social.
     """
-    """url = f"{API_BASE}{API_NOMBRE_RAZON_SOCIAL}?nombre={nombre}&tipoPersona=nat&SoloActivos=false&pagina=1"
-    data = await make_request(url)
-
-    if not data:
-        return "Unable to fetch data found."
-
-    return json.dumps(data)
-    """
-    comando = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur"]
-    print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {comando}")  # <-- LOG
-    data = ejecutar_comando_para_llm(comando)
+    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur"]
+    print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
 
     return json.dumps(data)
 
@@ -143,7 +149,7 @@ if __name__ == "__main__":
     # Create Starlette app with SSE support
     starlette_app = create_starlette_app(mcp_server, debug=True)
     
-    port = 8080
+    port = 2055
     print(f"Starting MCP server with SSE transport on port {port}...")
     print(f"SSE endpoint available at: http://localhost:{port}/sse")
     
