@@ -5,20 +5,19 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Mount, Route
 import uvicorn
-import json
 from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
-import asyncio
 import subprocess
+from starlette.responses import JSONResponse
 
 # Create the MCP server
 mcp = FastMCP("SSE Example Server")
 
 API_BASE = "https://consultaprocesos.ramajudicial.gov.co:448/api/v2/"
-API_RADICACION = "Procesos/Consulta/NumeroRadicacion"
+API_NUMERO_RADICACION = "Procesos/Consulta/NumeroRadicacion"
 API_NOMBRE_RAZON_SOCIAL = "Procesos/Consulta/NombreRazonSocial"
 
 USER_AGENT = "skemati.ca.sse-app/1.0"
@@ -88,7 +87,7 @@ async def get_radicacion_por_numero(numero: str) -> str:
     return json.dumps(data)
     """
     data = execute_cli_judicial(["judicial", "consulta", "radicado", numero])
-    return json.dumps(data)
+    return data
 
 @mcp.tool()
 async def get_radicacion_por_nombre_persona_natural(nombre: str) -> str:
@@ -102,7 +101,7 @@ async def get_radicacion_por_nombre_persona_natural(nombre: str) -> str:
     print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {cmd}")  # <-- LOG
     data = execute_cli_judicial(cmd)
 
-    return json.dumps(data)
+    return data
 
 @mcp.tool()
 async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
@@ -112,11 +111,11 @@ async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
     Returns:
         Los resultados de la consulta de la radicacion por nombre de la razon social.
     """
-    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur"]
+    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur", "--json-only"]
     print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {cmd}")  # <-- LOG
     data = execute_cli_judicial(cmd)
 
-    return json.dumps(data)
+    return data
 
 def create_starlette_app(mcp_server: Server, *, debug: bool = False) -> Starlette:
     """Create a Starlette application that can serve the MCP server with SSE."""
@@ -134,10 +133,14 @@ def create_starlette_app(mcp_server: Server, *, debug: bool = False) -> Starlett
                 mcp_server.create_initialization_options(),
             )
 
+    async def list_tools(request):
+        return JSONResponse({"tools": list(mcp.tools.keys())})
+
     return Starlette(
         debug=debug,
         routes=[
             Route("/sse", endpoint=handle_sse),
+            Route("/tools", list_tools),
             Mount("/messages/", app=sse.handle_post_message),
         ],
     )
