@@ -22,7 +22,7 @@ API_NOMBRE_RAZON_SOCIAL = "Procesos/Consulta/NombreRazonSocial"
 
 USER_AGENT = "skemati.ca.sse-app/1.0"
 
-def execute_cli_judicial(cmd, timeout=25):
+def execute_cli_judicial(cmd, timeout=120):
     try:
         resultado = subprocess.run(
             cmd,
@@ -64,7 +64,7 @@ async def make_request(url: str) -> dict[str, Any] | None:
     }
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url, headers=headers, timeout=30.0)
+            response = await client.get(url, headers=headers, timeout=120.0)
             response.raise_for_status()
             return response.json()
         except Exception:
@@ -111,8 +111,64 @@ async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
     Returns:
         Los resultados de la consulta de la radicacion por nombre de la razon social.
     """
-    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur", "--json-only"]
+    cmd = ["judicial", "consulta", "nombre", nombre, "--tipo", "jur"]
     print(f"[DEBUG] Comando construido en get_radicacion_por_nombre: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
+
+    return data
+
+@mcp.tool()
+async def get_detalle_proceso(id: str) -> str:
+    """Get 
+    Args:
+        id: codigo alfanumerico generado por la consulta de radicados.
+    Returns:
+        El detalle del proceso.
+    """
+    cmd = ["judicial", "consulta", "proceso", "detalle", id]
+    print(f"[DEBUG] Comando construido en get_detalle_proceso: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
+
+    return data
+
+@mcp.tool()
+async def get_sujetos_proceso(id: str) -> str:
+    """Get 
+    Args:
+        id: codigo alfanumerico generado por la consulta de radicados.
+    Returns:
+        Sujetos asociados al proceso.
+    """
+    cmd = ["judicial", "consulta", "proceso", "sujetos", id]
+    print(f"[DEBUG] Comando construido en get_detalle_proceso: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
+
+    return data
+
+@mcp.tool()
+async def get_actuaciones_proceso(id: str) -> str:
+    """Get 
+    Args:
+        id: codigo alfanumerico generado por la consulta de radicados.
+    Returns:
+        Actuaciones asociadas al proceso.
+    """
+    cmd = ["judicial", "consulta", "proceso", "actuaciones", id]
+    print(f"[DEBUG] Comando construido en get_detalle_proceso: {cmd}")  # <-- LOG
+    data = execute_cli_judicial(cmd)
+
+    return data
+
+@mcp.tool()
+async def get_documentos_proceso(id: str) -> str:
+    """Get 
+    Args:
+        id: codigo alfanumerico generado por la consulta de radicados.
+    Returns:
+        Documentos asociados al proceso.
+    """
+    cmd = ["judicial", "consulta", "proceso", "documentos", id]
+    print(f"[DEBUG] Comando construido en get_detalle_proceso: {cmd}")  # <-- LOG
     data = execute_cli_judicial(cmd)
 
     return data
