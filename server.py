@@ -71,7 +71,7 @@ async def make_request(url: str) -> dict[str, Any] | None:
             return None
 
 @mcp.tool()
-async def get_radicacion_por_numero(numero: str) -> str:
+async def judicial_query_proceso_by_radicado(numero_radicado: str) -> str:
     """Get 
     Args:
         numero: corresponde al numero de radicacion.
@@ -86,11 +86,11 @@ async def get_radicacion_por_numero(numero: str) -> str:
 
     return json.dumps(data)
     """
-    data = execute_cli_judicial(["judicial", "consulta", "radicado", numero])
+    data = execute_cli_judicial(["judicial", "consulta", "radicado", numero_radicado])
     return data
 
 @mcp.tool()
-async def get_radicacion_por_nombre_persona_natural(nombre: str) -> str:
+async def judicial_query_sujeto_procesal_natural_by_nombre(nombre: str) -> str:
     """Get 
     Args:
         nombre: corresponde al nombre de la persona natural.
@@ -104,7 +104,7 @@ async def get_radicacion_por_nombre_persona_natural(nombre: str) -> str:
     return data
 
 @mcp.tool()
-async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
+async def judicial_query_sujeto_procesal_juridico_by_nombre(nombre: str) -> str:
     """Get 
     Args:
         nombre: corresponde al nombre de la razon social.
@@ -118,7 +118,7 @@ async def get_radicacion_por_nombre_persona_juridica(nombre: str) -> str:
     return data
 
 @mcp.tool()
-async def get_detalle_proceso(id: str) -> str:
+async def judicial_query_proceso_detalle(id: str) -> str:
     """Get 
     Args:
         id: codigo alfanumerico generado por la consulta de radicados.
@@ -132,7 +132,7 @@ async def get_detalle_proceso(id: str) -> str:
     return data
 
 @mcp.tool()
-async def get_sujetos_proceso(id: str) -> str:
+async def judicial_query_proceso_sujetos_procesales(id: str) -> str:
     """Get 
     Args:
         id: codigo alfanumerico generado por la consulta de radicados.
@@ -146,7 +146,7 @@ async def get_sujetos_proceso(id: str) -> str:
     return data
 
 @mcp.tool()
-async def get_actuaciones_proceso(id: str) -> str:
+async def judicial_query_proceso_actuaciones(id: str) -> str:
     """Get 
     Args:
         id: codigo alfanumerico generado por la consulta de radicados.
@@ -160,7 +160,7 @@ async def get_actuaciones_proceso(id: str) -> str:
     return data
 
 @mcp.tool()
-async def get_documentos_proceso(id: str) -> str:
+async def judicial_query_proceso_documentos(id: str) -> str:
     """Get 
     Args:
         id: codigo alfanumerico generado por la consulta de radicados.
